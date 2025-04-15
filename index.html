@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Permite responsividade -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calculadora de Piso e Argamassa</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -12,49 +12,41 @@
   <h2 class="mb-4 text-center">🧱 Calculadora de Piso e Argamassa</h2>
 
   <div class="row g-3">
-    <!-- Campo Comprimento da Área -->
     <div class="col-12 col-md-6">
       <label class="form-label">Comprimento da área (m):</label>
       <input type="number" class="form-control" id="areaComprimento" step="0.01" placeholder="Ex: 5">
     </div>
 
-    <!-- Campo Largura da Área -->
     <div class="col-12 col-md-6">
       <label class="form-label">Largura da área (m):</label>
       <input type="number" class="form-control" id="areaLargura" step="0.01" placeholder="Ex: 5">
     </div>
 
-    <!-- Campo Comprimento do Piso -->
     <div class="col-12 col-md-6">
       <label class="form-label">Comprimento do piso (cm):</label>
       <input type="number" class="form-control" id="pisoComprimento" placeholder="Ex: 51">
     </div>
 
-    <!-- Campo Largura do Piso -->
     <div class="col-12 col-md-6">
       <label class="form-label">Largura do piso (cm):</label>
       <input type="number" class="form-control" id="pisoLargura" placeholder="Ex: 51">
     </div>
 
-    <!-- Campo Peças por Caixa -->
     <div class="col-12 col-md-6">
       <label class="form-label">Peças por caixa:</label>
       <input type="number" class="form-control" id="pecasPorCaixa" placeholder="Ex: 5">
     </div>
 
-    <!-- Campo Preço por m² do Piso -->
     <div class="col-12 col-md-6">
       <label class="form-label">Preço do m² do piso (R$):</label>
       <input type="number" class="form-control" id="precoM2Piso" step="0.01" placeholder="Ex: 30">
     </div>
 
-    <!-- Campo Preço do Saco de Argamassa -->
     <div class="col-12 col-md-6">
       <label class="form-label">Preço do saco de argamassa (R$):</label>
-      <input type="number" class="form-control" id="precoSacoArgamassa" step="0.01" placeholder="Ex: 20">
+      <input type="number" class="form-control" id="precoSacoArgamassa" step="0.01" placeholder="Opcional">
     </div>
 
-    <!-- Campo Tipo de Argamassa -->
     <div class="col-12 col-md-6">
       <label class="form-label">Tipo de aplicação (argamassa):</label>
       <select class="form-select" id="tipoArgamassa">
@@ -64,12 +56,10 @@
       </select>
     </div>
 
-    <!-- Botão de Calcular -->
     <div class="col-12 d-grid">
       <button class="btn btn-primary" onclick="calcular()">Calcular</button>
     </div>
 
-    <!-- Resultado -->
     <div class="col-12 mt-4">
       <div class="alert alert-info" id="resultado"></div>
     </div>
@@ -87,9 +77,19 @@
     let precoSacoArgamassa = parseFloat(document.getElementById('precoSacoArgamassa').value);
     let consumo = parseFloat(document.getElementById('tipoArgamassa').value);
 
-    if (isNaN(areaC) || isNaN(areaL) || isNaN(pisoC) || isNaN(pisoL) || isNaN(pecasPorCaixa) || pecasPorCaixa <= 0 || isNaN(precoM2Piso) || precoM2Piso <= 0 || isNaN(precoSacoArgamassa) || precoSacoArgamassa <= 0) {
-      document.getElementById('resultado').innerHTML = "Por favor, preencha todos os campos corretamente.";
+    if (
+      isNaN(areaC) || isNaN(areaL) ||
+      isNaN(pisoC) || isNaN(pisoL) ||
+      isNaN(pecasPorCaixa) || pecasPorCaixa <= 0 ||
+      isNaN(precoM2Piso) || precoM2Piso <= 0
+    ) {
+      document.getElementById('resultado').innerHTML = "Por favor, preencha todos os campos obrigatórios corretamente.";
       return;
+    }
+
+    // Valor padrão se o campo for deixado em branco
+    if (isNaN(precoSacoArgamassa)) {
+      precoSacoArgamassa = 0;
     }
 
     let areaTotal = areaC * areaL;
@@ -101,12 +101,9 @@
     let totalKgArgamassa = areaTotal * consumo;
     let sacosArgamassa = Math.ceil(totalKgArgamassa / 20);
 
-    // Preço do piso
-    let precoPisoCaixa = precoM2Piso * areaPiso * pecasPorCaixa;  // Preço total de uma caixa
-    let custoPisoTotal = precoPisoCaixa * totalCaixas;  // Preço total das caixas para o projeto
-
-    // Preço total da argamassa
-    let custoArgamassa = precoSacoArgamassa * sacosArgamassa; // Preço total da argamassa
+    let precoPisoCaixa = precoM2Piso * areaPiso * pecasPorCaixa;
+    let custoPisoTotal = precoPisoCaixa * totalCaixas;
+    let custoArgamassa = precoSacoArgamassa * sacosArgamassa;
 
     let resultado = `
       <strong>Área total:</strong> ${areaTotal.toFixed(2)} m²<br>
