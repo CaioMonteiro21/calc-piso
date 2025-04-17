@@ -13,28 +13,13 @@
 
   <div class="row g-3">
     <div class="col-12 col-md-6">
-      <label class="form-label">Comprimento da área (m):</label>
-      <input type="number" class="form-control" id="areaComprimento" step="0.01" placeholder="Ex: 5">
+      <label class="form-label">Área total (m²):</label>
+      <input type="number" class="form-control" id="areaTotal" step="0.01" placeholder="Ex: 25">
     </div>
 
     <div class="col-12 col-md-6">
-      <label class="form-label">Largura da área (m):</label>
-      <input type="number" class="form-control" id="areaLargura" step="0.01" placeholder="Ex: 5">
-    </div>
-
-    <div class="col-12 col-md-6">
-      <label class="form-label">Comprimento do piso (cm):</label>
-      <input type="number" class="form-control" id="pisoComprimento" placeholder="Ex: 51">
-    </div>
-
-    <div class="col-12 col-md-6">
-      <label class="form-label">Largura do piso (cm):</label>
-      <input type="number" class="form-control" id="pisoLargura" placeholder="Ex: 51">
-    </div>
-
-    <div class="col-12 col-md-6">
-      <label class="form-label">Peças por caixa:</label>
-      <input type="number" class="form-control" id="pecasPorCaixa" placeholder="Ex: 5">
+      <label class="form-label">Metros por caixa de piso (m²):</label>
+      <input type="number" class="form-control" id="m2PorCaixa" step="0.01" placeholder="Ex: 2.5">
     </div>
 
     <div class="col-12 col-md-6">
@@ -67,57 +52,44 @@
 </div>
 
 <script>
-  function calcular() {
-    let areaC = parseFloat(document.getElementById('areaComprimento').value);
-    let areaL = parseFloat(document.getElementById('areaLargura').value);
-    let pisoC = parseFloat(document.getElementById('pisoComprimento').value) / 100;
-    let pisoL = parseFloat(document.getElementById('pisoLargura').value) / 100;
-    let pecasPorCaixa = parseInt(document.getElementById('pecasPorCaixa').value);
-    let precoM2Piso = parseFloat(document.getElementById('precoM2Piso').value);
-    let precoSacoArgamassa = parseFloat(document.getElementById('precoSacoArgamassa').value);
-    let consumo = parseFloat(document.getElementById('tipoArgamassa').value);
+function calcular() {
+  let areaTotal = parseFloat(document.getElementById('areaTotal').value);
+  let m2PorCaixa = parseFloat(document.getElementById('m2PorCaixa').value);
+  let precoM2Piso = parseFloat(document.getElementById('precoM2Piso').value);
+  let precoSacoArgamassa = parseFloat(document.getElementById('precoSacoArgamassa').value);
+  let consumo = parseFloat(document.getElementById('tipoArgamassa').value);
 
-    if (
-      isNaN(areaC) || isNaN(areaL) ||
-      isNaN(pisoC) || isNaN(pisoL) ||
-      isNaN(pecasPorCaixa) || pecasPorCaixa <= 0 ||
-      isNaN(precoM2Piso) || precoM2Piso <= 0
-    ) {
-      document.getElementById('resultado').innerHTML = "Por favor, preencha todos os campos obrigatórios corretamente.";
-      return;
-    }
-
-    // Valor padrão se o campo for deixado em branco
-    if (isNaN(precoSacoArgamassa)) {
-      precoSacoArgamassa = 0;
-    }
-
-    let areaTotal = areaC * areaL;
-    let areaPiso = pisoC * pisoL;
-    let totalPisos = areaTotal / areaPiso;
-    let totalPisosArredondado = Math.ceil(totalPisos);
-    let totalCaixas = Math.ceil(totalPisos / pecasPorCaixa);
-
-    let totalKgArgamassa = areaTotal * consumo;
-    let sacosArgamassa = Math.ceil(totalKgArgamassa / 20);
-
-    let precoPisoCaixa = precoM2Piso * areaPiso * pecasPorCaixa;
-    let custoPisoTotal = precoPisoCaixa * totalCaixas;
-    let custoArgamassa = precoSacoArgamassa * sacosArgamassa;
-
-    let resultado = `
-      <strong>Área total:</strong> ${areaTotal.toFixed(2)} m²<br>
-      <strong>Peças de piso necessárias:</strong> ${totalPisosArredondado} unidades<br>
-      <strong>Caixas de piso necessárias:</strong> ${totalCaixas} caixas<br>
-      <strong>Preço de cada caixa de piso:</strong> R$ ${precoPisoCaixa.toFixed(2)}<br>
-      <strong>Preço total do piso:</strong> R$ ${custoPisoTotal.toFixed(2)}<br>
-      <strong>Argamassa necessária:</strong> ${totalKgArgamassa.toFixed(1)} kg (~${sacosArgamassa} sacos de 20kg)<br>
-      <strong>Custo da argamassa:</strong> R$ ${custoArgamassa.toFixed(2)}<br>
-      <strong><u>Custo total do projeto (piso + argamassa):</u></strong> R$ ${(custoPisoTotal + custoArgamassa).toFixed(2)}
-    `;
-
-    document.getElementById('resultado').innerHTML = resultado;
+  if (isNaN(areaTotal) || areaTotal <= 0 ||
+      isNaN(m2PorCaixa) || m2PorCaixa <= 0 ||
+      isNaN(precoM2Piso) || precoM2Piso <= 0) {
+    document.getElementById('resultado').innerHTML = "Por favor, preencha todos os campos obrigatórios corretamente.";
+    return;
   }
+
+  if (isNaN(precoSacoArgamassa)) {
+    precoSacoArgamassa = 0;
+  }
+
+  let totalCaixas = Math.ceil(areaTotal / m2PorCaixa);
+  let precoCaixa = m2PorCaixa * precoM2Piso;
+  let custoPisoTotal = precoCaixa * totalCaixas;
+
+  let totalKgArgamassa = areaTotal * consumo;
+  let sacosArgamassa = Math.ceil(totalKgArgamassa / 20);
+  let custoArgamassa = precoSacoArgamassa * sacosArgamassa;
+
+  let resultado = `
+    <strong>Área total:</strong> ${areaTotal.toFixed(2)} m²<br>
+    <strong>Caixas de piso necessárias:</strong> ${totalCaixas} caixas<br>
+    <strong>Preço de cada caixa de piso:</strong> R$ ${precoCaixa.toFixed(2)}<br>
+    <strong>Preço total do piso:</strong> R$ ${custoPisoTotal.toFixed(2)}<br>
+    <strong>Argamassa necessária:</strong> ${totalKgArgamassa.toFixed(1)} kg (~${sacosArgamassa} sacos de 20kg)<br>
+    <strong>Custo da argamassa:</strong> R$ ${custoArgamassa.toFixed(2)}<br>
+    <strong><u>Custo total do projeto (piso + argamassa):</u></strong> R$ ${(custoPisoTotal + custoArgamassa).toFixed(2)}
+  `;
+
+  document.getElementById('resultado').innerHTML = resultado;
+}
 </script>
 
 </body>
